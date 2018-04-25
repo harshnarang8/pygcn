@@ -17,9 +17,11 @@ class SparseMM(torch.autograd.Function):
 
     def __init__(self, sparse):
         super(SparseMM, self).__init__()
-        self.sparse = sparse
+        self.sparse = sparse.data
 
     def forward(self, dense):
+        # print(self.sparse)
+        # print(type(dense))
         return torch.mm(self.sparse, dense)
 
     def backward(self, grad_output):
@@ -52,7 +54,11 @@ class GraphConvolution(Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
+        #print(type(input))
+        #print(type(self.weight))
         support = torch.mm(input, self.weight)
+        # print("Var_ ",adj)
+        #print("Var_ ", support)
         output = SparseMM(adj)(support)
         if self.bias is not None:
             return output + self.bias
